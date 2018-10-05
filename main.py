@@ -6,9 +6,9 @@ from policy_learner import PolicyLearner
 
 
 if __name__ == '__main__':
-    stock_code = '005930'  # 삼성전자
+    stock_code = '035720'  # 카카오
 
-    # 로그 기록
+   # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
     if not os.path.exists('logs/%s' % stock_code):
@@ -29,8 +29,11 @@ if __name__ == '__main__':
     training_data = data_manager.build_training_data(prep_data)
 
     # 기간 필터링
-    training_data = training_data[(training_data['date'] >= '2017-01-01') &
-                                  (training_data['date'] <= '2017-12-31')]
+    #training_data = training_data[(training_data['date'] >= '2017-01-01') &
+    #                              (training_data['date'] <= '2017-12-31')]
+
+    training_data = training_data[(training_data['date'] >= '2017.01.01') &
+                                  (training_data['date'] <= '2017.12.31')]
     training_data = training_data.dropna()
 
     # 차트 데이터 분리

@@ -3,9 +3,17 @@ import numpy as np
 
 
 def load_chart_data(fpath):
-    chart_data = pd.read_csv(fpath, thousands=',', header=None)
-    chart_data.columns = ['date', 'open', 'high', 'low', 'close', 'volume']
+
+    if 0:
+        chart_data = pd.read_csv(fpath, thousands=',', header=None)
+        chart_data.columns = ['date', 'open', 'high', 'low', 'close', 'volume']
+    else:
+        chart_data = pd.read_csv(fpath)
+        #chart_data.columns = ['date', 'close', 'diff', 'open', 'high', 'low', 'volume']
+
     return chart_data
+
+
 
 
 def preprocess(chart_data):
