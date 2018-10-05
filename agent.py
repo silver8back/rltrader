@@ -6,8 +6,8 @@ class Agent:
     STATE_DIM = 2  # 주식 보유 비율, 포트폴리오 가치 비율
 
     # 매매 수수료 및 세금
-    TRADING_CHARGE = 0  # 거래 수수료 미고려 (일반적으로 0.015%)
-    TRADING_TAX = 0  # 거래세 미고려 (실제 0.3%)
+    TRADING_CHARGE = 0.00015  # 거래 수수료 미고려 (0.015%)
+    TRADING_TAX = 0.003  # 거래세 미고려 (0.3%)
 
     # 행동
     ACTION_BUY = 0  # 매수
@@ -75,8 +75,16 @@ class Agent:
         else:
             exploration = False
             probs = policy_network.predict(sample)  # 각 행동에 대한 확률
-            action = np.argmax(probs)
-            confidence = probs[action]
+            if 0:
+                action = np.argmax(probs)
+                confidence = probs[action]
+            else:
+                if np.max(probs) > 0.1 :
+                    action = np.argmax(probs)
+                    confidence = probs[action]
+                else:
+                    action = Agent.ACTION_HOLD
+
         return action, confidence, exploration
 
     def validate_action(self, action):

@@ -27,7 +27,7 @@ class PolicyLearner:
                            max_trading_unit=max_trading_unit,
                            delayed_reward_threshold=delayed_reward_threshold)
         self.training_data = training_data  # 학습 데이터
-        self.sample = None
+        self.samples = None
         self.training_data_idx = -1
         # 정책 신경망; 입력 크기 = 학습 데이터의 크기 + 에이전트 상태 크기
         self.num_features = self.training_data.shape[1] + self.agent.STATE_DIM
@@ -41,7 +41,7 @@ class PolicyLearner:
 
     def fit(
         self, num_epoches=1000, max_memory=60, balance=10000000,
-        discount_factor=0, start_epsilon=.5, learning=True):
+        discount_factor=0, start_epsilon=.5, learning=True, index_change_rate=0):
         logger.info("LR: {lr}, DF: {discount_factor}, "
                     "TU: [{min_trading_unit}, {max_trading_unit}], "
                     "DRT: {delayed_reward_threshold}".format(
@@ -197,9 +197,16 @@ class PolicyLearner:
             if self.agent.portfolio_value > self.agent.initial_balance:
                 epoch_win_cnt += 1
 
+        #수익율 계산
+        profit = (max_portfolio_value - balance) / balance * 100
+
         # 학습 관련 정보 로그 기록
-        logger.info("Max PV: %s, \t # Win: %d" % (
-            locale.currency(max_portfolio_value, grouping=True), epoch_win_cnt))
+        if 0:
+            logger.info("Max PV: %s, \t # Win: %d" % (
+             locale.currency(max_portfolio_value, grouping=True), epoch_win_cnt))
+        else:
+            logger.info("Max PV: %s, \t #Profit: %.2f, \t #Win: %d, \t  # Index : %.2f" %(
+                locale.currency(max_portfolio_value, grouping=True), profit, epoch_win_cnt, index_change_rate))
 
     def _get_batch(self, memory, batch_size, discount_factor, delayed_reward):
         x = np.zeros((batch_size, 1, self.num_features))
@@ -222,8 +229,8 @@ class PolicyLearner:
             return self.sample
         return None
 
-    def trade(self, model_path=None, balance=2000000):
+    def trade(self, model_path=None, balance=2000000, index_change_rate=0):
         if model_path is None:
             return
         self.policy_network.load_model(model_path=model_path)
-        self.fit(balance=balance, num_epoches=1, learning=False)
+        self.fit(balance=balance, num_epoches=1, learning=False, index_change_rate = index_change_rate)

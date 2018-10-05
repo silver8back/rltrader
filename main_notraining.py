@@ -7,7 +7,7 @@ from policy_learner import PolicyLearner
 
 if __name__ == '__main__':
     stock_code = '035720'  # 카카오
-    model_ver = '20181004133724'
+    model_ver = '20181005213958'
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
@@ -35,6 +35,10 @@ if __name__ == '__main__':
     features_chart_data = ['date', 'open', 'high', 'low', 'close', 'volume']
     chart_data = training_data[features_chart_data]
 
+    #해당 종목 해당 기간 인덱스 추이
+    index_change_rate = (chart_data["close"].iloc[-1] / chart_data["close"].iloc[0]) * 100
+
+
     # 학습 데이터 분리
     features_training_data = [
         'open_lastclose_ratio', 'high_close_ratio', 'low_close_ratio',
@@ -54,4 +58,5 @@ if __name__ == '__main__':
     policy_learner.trade(balance=10000000,
                          model_path=os.path.join(
                              settings.BASE_DIR,
-                             'models/{}/model_{}.h5'.format(stock_code, model_ver)))
+                             'models/{}/model_{}.h5'.format(stock_code, model_ver)),
+                         index_change_rate=index_change_rate)

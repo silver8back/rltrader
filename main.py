@@ -32,13 +32,17 @@ if __name__ == '__main__':
     #training_data = training_data[(training_data['date'] >= '2017-01-01') &
     #                              (training_data['date'] <= '2017-12-31')]
 
-    training_data = training_data[(training_data['date'] >= '2017.01.01') &
+    training_data = training_data[(training_data['date'] >= '2008.01.01') &
                                   (training_data['date'] <= '2017.12.31')]
     training_data = training_data.dropna()
 
     # 차트 데이터 분리
     features_chart_data = ['date', 'open', 'high', 'low', 'close', 'volume']
     chart_data = training_data[features_chart_data]
+
+    #해당 종목 해당 기간 인덱스 추이
+    index_change_rate = (chart_data["close"].iloc[-1] / chart_data["close"].iloc[0]) * 100
+
 
     # 학습 데이터 분리
     features_training_data = [
@@ -56,8 +60,8 @@ if __name__ == '__main__':
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
         min_trading_unit=1, max_trading_unit=2, delayed_reward_threshold=.2, lr=.001)
-    policy_learner.fit(balance=10000000, num_epoches=1000,
-                       discount_factor=0, start_epsilon=.5)
+    policy_learner.fit(balance=10000000, num_epoches=100,
+                       discount_factor=0, start_epsilon=.5, index_change_rate=index_change_rate)
 
     # 정책 신경망을 파일로 저장
     model_dir = os.path.join(settings.BASE_DIR, 'models/%s' % stock_code)
